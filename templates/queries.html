@@ -1,0 +1,6 @@
+{% extends "base.html" %}{% block content %}
+<h2>Queries</h2>
+<form method="post" action="/queries"><textarea name="question" rows="3"></textarea>
+<button type="submit">Run</button></form>
+{% if results %}<pre>{{ results | tojson(indent=2) }}</pre>{% endif %}
+{% endblock %}
