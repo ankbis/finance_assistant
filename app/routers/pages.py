@@ -42,6 +42,10 @@ async def home(request: Request):
 async def login_form(request: Request):
     return templates.TemplateResponse("login.html", _ctx(request))
 
+@router.get("/admin")
+async def login_form(request: Request):
+    return templates.TemplateResponse("admin.html", _ctx(request))
+
 
 @router.post("/login")
 async def login(
