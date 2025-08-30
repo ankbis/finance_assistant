@@ -1,12 +1,23 @@
+from __future__ import annotations
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Text
+from sqlalchemy import String, DateTime, func
 import uuid
+from datetime import datetime
+
 
 class Base(DeclarativeBase):
     pass
 
-class Item(Base):
-    __tablename__ = "items"
-    id: Mapped[str] = mapped_column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
-    name: Mapped[str] = mapped_column(String(120), index=True)
-    description: Mapped[str | None] = mapped_column(Text, default=None)
+
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[str] = mapped_column(
+        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
+    )
+    email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
+    full_name: Mapped[str | None] = mapped_column(String(200), default=None)
+    hashed_password: Mapped[str] = mapped_column(String(255))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), server_default=func.now()
+    )

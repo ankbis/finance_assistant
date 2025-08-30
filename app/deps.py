@@ -1,6 +1,7 @@
 from fastapi import Request
 from app.core.auth import current_user
 
+
 def template_ctx(request: Request) -> dict:
     return {
         "user": current_user(request),

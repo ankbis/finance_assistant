@@ -6,13 +6,16 @@ from app.core import auth
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+
 def _flash(request: Request, message: str, kind: str = "ok") -> None:
     toasts = request.session.get("toasts", [])
     toasts.append({"message": message, "kind": kind})
     request.session["toasts"] = toasts
 
+
 def _pop_toasts(request: Request) -> list[dict]:
     return request.session.pop("toasts", [])
+
 
 def _ctx(request: Request) -> dict:
     return {
@@ -23,12 +26,14 @@ def _ctx(request: Request) -> dict:
         "toasts": _pop_toasts(request),
     }
 
+
 @router.get("/admin")
 async def admin_page(request: Request):
     auth.require_user(request)
     ctx = _ctx(request)
     ctx["flags"] = {"disable_docs": False}
     return templates.TemplateResponse("admin.html", ctx)
+
 
 @router.post("/admin/seed")
 async def run_seed(request: Request):

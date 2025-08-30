@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
-        extra="ignore",         # ignore unknown env vars instead of erroring
+        extra="ignore",  # ignore unknown env vars instead of erroring
         case_sensitive=True,
     )
 
