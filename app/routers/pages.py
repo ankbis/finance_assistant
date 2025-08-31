@@ -23,11 +23,18 @@ def _pop_toasts(request: Request) -> list[dict]:
     return request.session.pop("toasts", [])
 
 
+def _display_name(u):
+    if isinstance(u, dict):
+        return u.get("full_name") or u.get("username") or u.get("email")
+    return str(u) if u else None
+
 def _ctx(request: Request) -> dict:
+    user = request.session.get("user")
     return {
         "request": request,
         "path": request.url.path,
-        "user": request.session.get("user"),
+        "user": user,
+        "user_display": _display_name(user),
         "env": request.app.state.env_name,
         "toasts": _pop_toasts(request),
     }
@@ -43,7 +50,7 @@ async def login_form(request: Request):
     return templates.TemplateResponse("login.html", _ctx(request))
 
 @router.get("/admin")
-async def login_form(request: Request):
+async def admin_page(request: Request):
     return templates.TemplateResponse("admin.html", _ctx(request))
 
 

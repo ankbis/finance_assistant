@@ -1,17 +1,33 @@
 {% extends "base.html" %}
+{% block title %}Create your account · Finance Assistant{% endblock %}
 {% block content %}
-  <div class="container">
-    <h2>Create your account</h2>
-    {% if error %}<div class="alert">{{ error }}</div>{% endif %}
-    <form method="post" action="/register" class="form">
-      <label>Email</label>
-      <input type="email" name="email" required />
-      <label>Full name (optional)</label>
-      <input type="text" name="full_name" />
-      <label>Password</label>
-      <input type="password" name="password" minlength="8" required />
-      <button type="submit">Register</button>
-    </form>
-    <p class="muted">Already have an account? <a href="/login">Log in</a>.</p>
+  <div class="centered">
+    <div class="card" style="max-width:560px;width:100%;">
+      <h1 class="card-title">Create your account</h1>
+      <p class="card-subtitle">It only takes a minute.</p>
+
+      <form method="post" action="/register" class="form">
+        <div class="input-row two">
+          <div>
+            <label class="label" for="email">Email</label>
+            <input class="input" id="email" type="email" name="email" placeholder="you@domain.com" required />
+          </div>
+          <div>
+            <label class="label" for="full_name">Full name (optional)</label>
+            <input class="input" id="full_name" type="text" name="full_name" placeholder="Jane Doe" />
+          </div>
+        </div>
+
+        <label class="label" for="password">Password</label>
+        <input class="input" id="password" type="password" name="password" minlength="8" placeholder="At least 8 characters" required />
+
+        <button class="btn btn-primary" type="submit">Register</button>
+        <a class="btn btn-ghost" href="/login">I already have an account</a>
+      </form>
+
+      <p class="muted" style="margin-top:14px;">
+        By continuing you agree to our <a href="/terms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+      </p>
+    </div>
   </div>
 {% endblock %}

@@ -1,5 +1,25 @@
-<form method="post" action="/login">
-  <input type="email" name="email" placeholder="email" required />
-  <input type="password" name="password" placeholder="password" required />
-  <button type="submit">Login</button>
-</form>
+{% extends "base.html" %}
+{% block title %}Log in · Finance Assistant{% endblock %}
+{% block content %}
+  <div class="centered">
+    <div class="card" style="max-width:420px;width:100%;">
+      <h1 class="card-title">Welcome back</h1>
+      <p class="card-subtitle">Log in to continue</p>
+
+      <form method="post" action="/login" class="form">
+        <label class="label" for="email">Email</label>
+        <input class="input" id="email" type="email" name="email" placeholder="you@domain.com" required />
+
+        <label class="label" for="password">Password</label>
+        <input class="input" id="password" type="password" name="password" placeholder="••••••••" required />
+
+        <button class="btn btn-primary" type="submit">Log in</button>
+        <a class="btn btn-ghost" href="/register">Create an account</a>
+      </form>
+
+      <p class="muted" style="margin-top:14px;">
+        <a href="/forgot-password">Forgot password?</a>
+      </p>
+    </div>
+  </div>
+{% endblock %}

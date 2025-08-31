@@ -1,42 +1,58 @@
 <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>{{ title or "App" }}</title>
-    <link rel="stylesheet" href="/static/styles.css" />
-    <style>
-      nav { display: flex; gap: .75rem; align-items: center; padding: .5rem 0; }
-      nav .spacer { flex: 1; }
-      nav form { display: inline; margin: 0; }
-      .toast { margin: .5rem 0; padding: .5rem; border: 1px solid #ccc; }
-      .toast.err { background: #fee; border-color: #f99; }
-    </style>
-  </head>
-  <body>
-    <nav>
-      <a href="/">Home</a>
-      <a href="/queries">Queries</a>
-      <a href="/admin">Admin</a>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}{{ title or "App" }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', path='styles.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/">YourApp</a>
+      <nav class="nav">
+         {% if user_display %}
+           <span class="nav-pill">Hi, {{ user_display }}</span>
+          <form action="/logout" method="post" style="display:inline;">
+            <button class="btn btn-ghost btn-sm" type="submit">Logout</button>
+          </form>
+        {% else %}
+          <a href="/login" class="{{ 'active' if path == '/login' else '' }}">Log in</a>
+          <a class="btn btn-primary btn-sm" href="/register">Sign up</a>
+        {% endif %}
+      </nav>
+    </div>
+  </header>
 
-      <span class="spacer"></span>
-
-      {% if user %}
-        <span>Hi {{ user.email }}</span>
-        <form method="post" action="/logout">
-          <button type="submit">Logout</button>
-        </form>
-      {% else %}
-        <a href="/login?next={{ path }}">Login</a>
-        <a href="/register">Register</a>
-      {% endif %}
-    </nav>
-
+  <!-- Toasts -->
+  <div id="toast-root" class="toast-root">
     {% for t in toasts %}
-      <div class="toast {{ t.kind }}">{{ t.message }}</div>
+      <div class="toast {{ 'toast-ok' if t.kind == 'ok' else 'toast-err' if t.kind == 'err' else 'toast-warn' }}">
+        <span>{{ t.message }}</span>
+        <button class="toast-x" aria-label="Close" onclick="this.parentElement.remove()">×</button>
+      </div>
     {% endfor %}
+  </div>
 
-    <main>
+  <main class="site-main">
+    <div class="container">
       {% block content %}{% endblock %}
-    </main>
-  </body>
+    </div>
+  </main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="muted">
+      © {{ now().year if now else "2025" }} BVerse AI Solutions Pvt Ltd. All rights reserved.
+    </p>
+  </div>
+</footer>
+
+  <script>
+    // auto-dismiss toasts after 4s
+    setTimeout(() => {
+      document.querySelectorAll('.toast').forEach(t => t.remove());
+    }, 4000);
+  </script>
+</body>
 </html>
