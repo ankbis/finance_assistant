@@ -28,13 +28,13 @@ def logout_user(request: Request) -> None:
     request.session.pop(SESSION_KEY, None)
 
 
-def current_user(request: Request) -> Optional[dict]:
+def get_current_user(request: Request) -> Optional[dict]:
     """Return the session user payload or None."""
     return request.session.get(SESSION_KEY)
 
 
 def is_authenticated(request: Request) -> bool:
-    return current_user(request) is not None
+    return get_current_user(request) is not None
 
 
 def require_user_or_redirect(

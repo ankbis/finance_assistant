@@ -1,11 +1,12 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select
 from app.db.models import StockHolding
 from app.schemas.holdings import StockHoldingCreate, StockHoldingUpdate
 from datetime import datetime
 import uuid
 
 
-def create_stock_holding(db: Session, holding: StockHoldingCreate, user_id: str) -> StockHolding:
+async def create_stock_holding(db: AsyncSession, holding: StockHoldingCreate, user_id: str) -> StockHolding:
     db_holding = StockHolding(
         id=str(uuid.uuid4()),
         user_id=user_id,
@@ -16,22 +17,28 @@ def create_stock_holding(db: Session, holding: StockHoldingCreate, user_id: str)
         last_updated=datetime.utcnow()
     )
     db.add(db_holding)
-    db.commit()
-    db.refresh(db_holding)
+    await db.commit()
+    await db.refresh(db_holding)
     return db_holding
 
 
-def get_user_stock_holdings(db: Session, user_id: str) -> list[StockHolding]:
-    return db.query(StockHolding).filter(StockHolding.user_id == user_id).all()
+async def get_user_stock_holdings(db: AsyncSession, user_id: str) -> list[StockHolding]:
+    result = await db.execute(
+        select(StockHolding).filter(StockHolding.user_id == user_id)
+    )
+    return result.scalars().all()
 
 
-def update_stock_holding(
-    db: Session, holding_id: str, holding: StockHoldingUpdate, user_id: str
+async def update_stock_holding(
+    db: AsyncSession, holding_id: str, holding: StockHoldingUpdate, user_id: str
 ) -> StockHolding | None:
-    db_holding = db.query(StockHolding).filter(
-        StockHolding.id == holding_id,
-        StockHolding.user_id == user_id
-    ).first()
+    result = await db.execute(
+        select(StockHolding).filter(
+            StockHolding.id == holding_id,
+            StockHolding.user_id == user_id
+        )
+    )
+    db_holding = result.scalar_one_or_none()
     
     if not db_holding:
         return None
@@ -41,20 +48,23 @@ def update_stock_holding(
         setattr(db_holding, field, value)
     
     db_holding.last_updated = datetime.utcnow()
-    db.commit()
-    db.refresh(db_holding)
+    await db.commit()
+    await db.refresh(db_holding)
     return db_holding
 
 
-def delete_stock_holding(db: Session, holding_id: str, user_id: str) -> bool:
-    db_holding = db.query(StockHolding).filter(
-        StockHolding.id == holding_id,
-        StockHolding.user_id == user_id
-    ).first()
+async def delete_stock_holding(db: AsyncSession, holding_id: str, user_id: str) -> bool:
+    result = await db.execute(
+        select(StockHolding).filter(
+            StockHolding.id == holding_id,
+            StockHolding.user_id == user_id
+        )
+    )
+    db_holding = result.scalar_one_or_none()
     
     if not db_holding:
         return False
     
-    db.delete(db_holding)
-    db.commit()
+    await db.delete(db_holding)
+    await db.commit()
     return True

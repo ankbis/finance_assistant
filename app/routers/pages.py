@@ -4,9 +4,11 @@ from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core import auth
-from app.core.auth import verify_password
+from app.core.auth import verify_password, get_current_user
+from app.core.context import get_template_context, add_flash_message
 from app.db.session import get_db
 from app.db import crud
+from app.db.crud.users import get_user_by_email
 from app.services.api_client import api_client, QueryRequest
 
 router = APIRouter()
@@ -28,30 +30,61 @@ def _display_name(u):
         return u.get("full_name") or u.get("username") or u.get("email")
     return str(u) if u else None
 
-def _ctx(request: Request) -> dict:
-    user = request.session.get("user")
-    return {
-        "request": request,
-        "path": request.url.path,
-        "user": user,
-        "user_display": _display_name(user),
-        "env": request.app.state.env_name,
-        "toasts": _pop_toasts(request),
-    }
-
-
 @router.get("/")
-async def home(request: Request):
-    return templates.TemplateResponse("home.html", _ctx(request))
+async def home(
+    request: Request,
+    current_user: dict | None = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    context = await get_template_context(request, db)
+    return templates.TemplateResponse("home.html", context)
 
 
 @router.get("/login")
-async def login_form(request: Request):
-    return templates.TemplateResponse("login.html", _ctx(request))
+async def login_form(
+    request: Request, 
+    current_user: dict | None = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db)
+):
+    if current_user:
+        return RedirectResponse(url="/", status_code=303)
+    context = await get_template_context(request, db)
+    return templates.TemplateResponse("login.html", context)
 
 @router.get("/admin")
-async def admin_page(request: Request):
-    return templates.TemplateResponse("admin.html", _ctx(request))
+async def admin(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    context = await get_template_context(request, db)
+    return templates.TemplateResponse("admin.html", context)
+
+
+@router.post("/query")
+async def run_query(
+    request: Request,
+    query: str = Form(...),
+    db: AsyncSession = Depends(get_db)
+):
+    if not query:
+        return RedirectResponse("/", status_code=303)
+
+    context = await get_template_context(request, db)
+    try:
+        resp = await api_client.send_query(QueryRequest(query=query))
+        context.update({
+            "query": query,
+            "result": resp.response,
+            "error": None,
+        })
+    except Exception as e:
+        context.update({
+            "query": query,
+            "result": None,
+            "error": str(e),
+        })
+
+    return templates.TemplateResponse("queries.html", context)
 
 
 @router.post("/login")
@@ -85,25 +118,32 @@ async def login(
 @router.post("/logout")
 async def logout(request: Request):
     auth.logout_user(request)
-    _flash(request, "Signed out")
+    add_flash_message(request, "Signed out")
     return RedirectResponse(url="/", status_code=303)
 
 
 @router.get("/queries")
-async def queries_form(request: Request):
-    ctx = _ctx(request)
-    ctx["results"] = None
-    return templates.TemplateResponse("queries.html", ctx)
+async def queries_form(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    context = await get_template_context(request, db)
+    context["results"] = None
+    return templates.TemplateResponse("queries.html", context)
 
 
 @router.post("/queries")
-async def run_query(request: Request, question: str = Form(...)):
+async def run_query(
+    request: Request,
+    question: str = Form(...),
+    db: AsyncSession = Depends(get_db)
+):
     payload = QueryRequest(question=question)
     try:
         result = await api_client.run_query(payload)
-        ctx = _ctx(request)
-        ctx["results"] = result.model_dump()
-        return templates.TemplateResponse("queries.html", ctx)
+        context = await get_template_context(request, db)
+        context["results"] = result.model_dump()
+        return templates.TemplateResponse("queries.html", context)
     except Exception as e:
-        _flash(request, f"Query failed: {e}", "err")
+        add_flash_message(request, f"Query failed: {e}", "error")
         return RedirectResponse(url="/queries", status_code=303)

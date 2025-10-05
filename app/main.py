@@ -7,7 +7,7 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.core.config import settings
 from app.db.session import engine
-from app.routers import pages, admin, auth
+from app.routers import pages, admin, auth, holdings
 
 _DOCS_URL = "/docs" if getattr(settings, "ENABLE_DOCS", True) else None
 _REDOC_URL = "/redoc" if getattr(settings, "ENABLE_REDOC", True) else None
@@ -47,6 +47,11 @@ app.state.env_name = ENV
 def health():
     return {"status": "ok"}
 
+# Include routers
+app.include_router(auth.router)
+app.include_router(admin.router)
+app.include_router(pages.router)
+app.include_router(holdings.router)
 
 @app.get("/", include_in_schema=False)
 def root():

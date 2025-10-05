@@ -6,16 +6,20 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.session import get_db
 from app.db import crud
 from app.core.auth import get_password_hash
+from app.core.context import get_template_context, add_flash_message
 
 router = APIRouter(prefix="", tags=["auth"])  # keep /register at root
 templates = Jinja2Templates(directory="templates")
 
 
 @router.get("/register", response_class=HTMLResponse)
-async def register_page(request: Request) -> HTMLResponse:
-    return templates.TemplateResponse(
-        "register.html", {"request": request, "error": None}
-    )
+async def register_page(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+) -> HTMLResponse:
+    context = await get_template_context(request, db)
+    context["error"] = None
+    return templates.TemplateResponse("register.html", context)
 
 
 @router.post("/register")
