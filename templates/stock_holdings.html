@@ -10,7 +10,7 @@
             Add New Stock Holding
         </div>
         <div class="card-body">
-            <form method="POST" action="{{ url_for('add_stock_holding') }}">
+            <form method="POST" action="/holdings/stocks">
                 <div class="mb-3">
                     <label for="symbol" class="form-label">Stock Symbol</label>
                     <input type="text" class="form-control" id="symbol" name="symbol" required>
