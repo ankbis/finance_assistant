@@ -1,23 +1,9 @@
-from __future__ import annotations
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, DateTime, func
-import uuid
-from datetime import datetime
+"""
+This file is kept for backward compatibility.
+All models have been moved to the models/ directory.
+"""
+from app.db.models.base import Base
+from app.db.models.user import User
+from app.db.models.holdings import StockHolding
 
-
-class Base(DeclarativeBase):
-    pass
-
-
-class User(Base):
-    __tablename__ = "users"
-
-    id: Mapped[str] = mapped_column(
-        String(36), primary_key=True, default=lambda: str(uuid.uuid4())
-    )
-    email: Mapped[str] = mapped_column(String(320), unique=True, index=True)
-    full_name: Mapped[str | None] = mapped_column(String(200), default=None)
-    hashed_password: Mapped[str] = mapped_column(String(255))
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+__all__ = ['Base', 'User', 'StockHolding']
