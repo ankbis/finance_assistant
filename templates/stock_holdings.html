@@ -10,7 +10,7 @@
     <div class="card">
         <h2 class="card-title">Add New Stock</h2>
         <p class="card-subtitle">Enter the details of your stock purchase</p>
-        <form method="POST" action="{{ url_for('add_stock_holding') }}" class="form">
+        <form id="addHoldingForm" class="form" onsubmit="return addHolding(event)">
             <div class="input-row two">
                 <div>
                     <label class="label" for="symbol">Stock Symbol</label>
@@ -83,6 +83,37 @@
 <script>
 function editHolding(id) {
     // TODO: Implement edit functionality
+}
+
+async function addHolding(event) {
+    event.preventDefault();
+    const form = event.target;
+    const formData = {
+        symbol: form.symbol.value.toUpperCase(),
+        quantity: parseInt(form.quantity.value),
+        avg_price: parseFloat(form.avg_price.value),
+        current_price: parseFloat(form.avg_price.value) // Initially set to avg_price, will be updated later
+    };
+
+    try {
+        const response = await fetch('/holdings/stocks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        });
+
+        if (response.ok) {
+            window.location.reload();
+        } else {
+            const error = await response.json();
+            alert('Error adding holding: ' + (error.detail || 'Unknown error'));
+        }
+    } catch (error) {
+        alert('Error adding holding: ' + error.message);
+    }
+    return false;
 }
 
 function deleteHolding(id) {
