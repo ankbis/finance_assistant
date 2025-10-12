@@ -78,6 +78,37 @@ color:var(--text);line-height:1.5}
 .empty-state{text-align:center;padding:40px 20px}
 .empty-state p{margin:0 0 8px}
 
+/* hero section */
+.hero{padding:80px 0;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+  background:radial-gradient(800px circle at top right,rgba(99,102,241,.15),transparent 80%),
+             radial-gradient(600px circle at bottom left,rgba(56,189,248,.12),transparent 80%)}
+.hero-title{font-size:3rem;font-weight:800;margin:0 0 24px;
+  background:linear-gradient(to right,var(--text),color-mix(in srgb,var(--text) 60%,transparent));
+  background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero-subtitle{font-size:1.25rem;color:var(--muted);max-width:600px;margin:0 auto 32px}
+.hero-cta{display:flex;gap:16px;justify-content:center}
+
+/* features section */
+.features{padding:80px 0;background:linear-gradient(to bottom,transparent,color-mix(in srgb,var(--bg) 98%,var(--primary)))}
+.features-grid{display:grid;gap:32px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.feature-card{background:linear-gradient(180deg,var(--panel),var(--panel-2));
+  border:1px solid color-mix(in srgb,var(--text) 8%,transparent);border-radius:var(--radius);
+  padding:32px;text-align:center;transition:transform .2s ease,box-shadow .2s ease}
+.feature-card:hover{transform:translateY(-4px);box-shadow:var(--shadow-2)}
+.feature-icon{font-size:2.5rem;margin-bottom:20px}
+.feature-card h3{margin:0 0 12px;font-size:1.4rem;font-weight:700}
+.feature-card p{margin:0;color:var(--muted)}
+
+/* info section */
+.info-section{padding:80px 0}
+.info-grid{display:grid;gap:48px;grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.info-content h2{font-size:1.8rem;font-weight:700;margin:0 0 24px}
+.info-content p{color:var(--muted);margin:0 0 24px}
+.feature-list{list-style:none;padding:0;margin:0 0 24px}
+.feature-list li{padding:12px 0;display:flex;align-items:center;color:var(--muted)}
+.feature-list li::before{content:'✓';color:var(--success);margin-right:12px;font-weight:bold}
+
 /* helpers */
 .centered{display:grid;place-items:center;min-height:calc(100dvh - 64px - 88px)}
 .muted{color:var(--muted)}

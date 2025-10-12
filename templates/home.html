@@ -1,5 +1,61 @@
-{% extends "base.html" %}{% block content %}
-<h2>Home</h2><p>Welcome.</p>
-<form method="post" action="/login"><input name="username" placeholder="demo">
-<input name="password" type="password" placeholder="demo"><button type="submit">Login</button></form>
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <div class="container">
+        <h1 class="hero-title">Track Your Investments<br>All in One Place</h1>
+        <p class="hero-subtitle">Monitor your stocks, mutual funds, and F&O positions with real-time updates and comprehensive analytics.</p>
+        {% if user %}
+        <div class="hero-cta">
+            <a href="/holdings/stocks" class="btn btn-primary">View Portfolio</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="features">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Stock Portfolio</h3>
+                <p>Track your stock investments with real-time prices, P&L analysis, and performance metrics.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Mutual Funds</h3>
+                <p>Monitor your mutual fund investments across different schemes and folios.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💹</div>
+                <h3>F&O Positions</h3>
+                <p>Keep track of your futures and options positions with expiry dates and strike prices.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="info-section">
+    <div class="container">
+        <div class="info-grid">
+            <div class="info-content">
+                <h2>Why Choose Finance Assistant?</h2>
+                <ul class="feature-list">
+                    <li>Comprehensive portfolio tracking</li>
+                    <li>Real-time price updates</li>
+                    <li>Performance analytics</li>
+                    <li>Secure and private</li>
+                    <li>Easy to use interface</li>
+                </ul>
+            </div>
+            <div class="info-content">
+                <h2>Get Started Today</h2>
+                <p>Join thousands of investors who trust Finance Assistant to track their investments. Create your free account and start monitoring your portfolio in minutes.</p>
+                {% if not user %}
+                <a href="/register" class="btn btn-primary">Create Free Account</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
